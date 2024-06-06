@@ -6,6 +6,8 @@ import Navbar from './components/Navbar'
 import Login from './components/Login'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import AuthProvider from './Providers/AuthProvider'
+import DashboardLayout from './components/Admin/DashboardLayout'
+import DashboardPostList from './components/Admin/DashboardPostList'
 
 const queryClient = new QueryClient();
 function App() {
@@ -21,8 +23,16 @@ function App() {
     {
       path: '/login',
       element: <><Navbar /><Login /> </>
+    },
+    {
+      path: '/dashboard/posts',
+      element: <>
+        <Navbar />
+        <DashboardLayout>
+          <DashboardPostList />
+        </DashboardLayout>
+      </>
     }
-
 
   ])
 
