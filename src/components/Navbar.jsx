@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../Providers/AuthProvider";
 export const Navbar = () => {
     const { user } = useAuth();
-    console.log(user);
     return (
         <>
             <nav className="bg-white font-semibold text-gray-800  text-md flex justify-between  shadow-lg p-4">
@@ -15,7 +14,12 @@ export const Navbar = () => {
                             <Link to="/">Home</Link>
                         </li>
                         <li>
-                            <Link to="/login">Login</Link>
+                            {user ? <Link to="/dashboard/posts">Dashboard</Link> : null}
+                        </li>
+                        <li>
+                            {user ? <Link to="/logout">Logout</Link> :
+                                <Link to="/login">Login</Link>
+                            }
                         </li>
                     </ul>
                 </div>
