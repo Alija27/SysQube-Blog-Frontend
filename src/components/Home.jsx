@@ -1,4 +1,21 @@
+import { useQuery } from "react-query";
+import axios from "axios";
+import moment from "moment";
 export const Home = () => {
+  const { data, isLoading } = useQuery("posts", async () => {
+    const response = await axios.get("http://localhost:8000/api/posts");
+    return response.data;
+  });
+  console.log("data", data);
+
+  const truncateString = (text) => {
+    return text.length > 150 ? text.slice(0, 150) + "..." : text;
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       <div className="relative object-center overflow-hidden bg-cover">
@@ -26,26 +43,47 @@ export const Home = () => {
         </div>
       </div>
       <div className="container">
-        <h1 className="mx-auto  font-bold text-5xl text-center text-gray-800 my-5">Tech Articles</h1>
-        <div className="flex mx-auto w-11/12 flex-col">
-
-          <div className="border border-gray-200 rounded-sm p-4 my-5 mx-5">
-            <h1 className="text-2xl font-bold text-gray-800">The future of technology</h1>
-            <p className="text-gray-500">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam
-              nec purus vel odio. Integer vel orci nec neque ornare pretium.
-              Nullam nec purus vel odio. Integer vel orci nec neque ornare
-              pretium.<p className="text-blue-500">Read More</p>
-            </p>
-            <div className="flex justify-end space-x-4">
-              <p className="text-gray-500"><p className="font-semibold">By:</p> John Doe</p>
-              <p className="text-gray-500"><p className="font-semibold">Published on: </p> 12/12/2021</p>
-            </div>
-          </div>
-
+        <h1 className="mx-auto  font-bold text-5xl text-center text-gray-800 my-5">
+          Tech Articles
+        </h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mx-auto w-11/12">
+          {data?.length > 0 ? (
+            data.map((post) => (
+              <div
+                key={post.id}
+                className="border border-gray-200 rounded-sm p-4 my-5 w-full"
+              >
+                <h1 className="text-2xl font-bold text-gray-800">
+                  {" "}
+                  {post.title}
+                </h1>
+                <div>
+                  <img
+                    src={post.image ? post.image : "https://via.placeholder.com/150"}
+                    alt={post.title}
+                    className="my-4 w-full h-[300px] object-cover object-center"
+                  />
+                </div>
+                <p className="text-gray-500">
+                  {truncateString(post.description)}
+                  <p className="text-blue-500">Read More</p>
+                </p>
+                <div className="flex justify-end space-x-4">
+                  <p className="text-gray-500 text-sm">
+                    <p className="font-semibold text-sm">By:</p> {post.user}
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    <p className="font-semibold text-sm">Published on: </p>{" "}
+                    {moment(post.created_at).format("ll")}
+                  </p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div>No Posts</div>
+          )}
         </div>
       </div>
-
     </>
   );
 };
