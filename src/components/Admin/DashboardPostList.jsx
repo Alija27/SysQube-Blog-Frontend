@@ -29,12 +29,19 @@ const DashboardPostList = () => {
       await axiosInstance.put(`/posts/${postId}`, {
         status: newStatus,
       })
+      queryClient.invalidateQueries("postsAdmin");
       toast.success("Post status updated successfully");
     }
      catch{
       console.error("Error updating post status:", error);
      }
   };
+
+  useEffect(() => {
+    if (selectedPost) {
+      setIsModalOpen(true);
+    }
+  }, [selectedPost]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -49,12 +56,6 @@ const DashboardPostList = () => {
       console.error("Error deleting post:", error);
     }
   }
-
-  useEffect(() => {
-    if (selectedPost) {
-      setIsModalOpen(true);
-    }
-  }, [selectedPost]);
 
   return (
     <>

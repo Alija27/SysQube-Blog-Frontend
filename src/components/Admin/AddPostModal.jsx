@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../config/axiosInstance";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const AddPostModal = ({ setIsModalOpen, setSelectedPost, selectedPost }) => {
 
@@ -12,30 +13,52 @@ const AddPostModal = ({ setIsModalOpen, setSelectedPost, selectedPost }) => {
     const queryClient = useQueryClient();
     const [image, setImage] = useState(null);
     const { mutate } = useMutation(async (data) => {
-        const response = await axiosInstance.post("http://localhost:8000/api/posts", data, {
+        const response = await axiosInstance.post("/posts", data, {
             headers: {
                 "Content-Type": "multipart/form-data"
             }
 
         });
+        queryClient.invalidateQueries("postsAdmin");
+        toast.success("Post added successfully");
         return response.json();
     });
+
+    const { mutate: updatePost } = useMutation(async (data) => {
+        const response = await axiosInstance.post(`/posts/${selectedPost.id}`, data, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        });
+        queryClient.invalidateQueries("postsAdmin");
+        toast.success("Post updated successfully");
+        return response.json();
+    });
+
     const onSubmit = (data) => {
         const formData = new FormData();
         formData.append("title", data.title);
         formData.append("slug", data.slug);
         formData.append("description", data.description);
-        formData.append("image", image);
-        mutate(formData);
-        queryClient.invalidateQueries("postsAdmin");
+        if(image){
+            formData.append("image", image);
+        }
+
+        if (selectedPost) {
+            formData.append("_method", "PUT");
+            updatePost(formData);
+        } else {
+            mutate(formData);
+        }
         setIsModalOpen(false);
-        navigate("/dashboard/posts");
+        setSelectedPost(null);
     }
 
 
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
+        setSelectedPost(null);
     };
 
     useEffect(() => {
@@ -67,7 +90,7 @@ const AddPostModal = ({ setIsModalOpen, setSelectedPost, selectedPost }) => {
 
                     <label className="text-gray-500 font-semibold mt-5" htmlFor="slug">Slug</label>
                     <input type="text" placeholder="slug" id="slug" name="slug" {...register("slug", {
-                        required: {
+                        required: { 
                             value: true,
                             message: "slug is required"
                         },

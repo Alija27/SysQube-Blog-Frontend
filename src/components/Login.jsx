@@ -12,7 +12,7 @@ export const Login = () => {
   const { register, handleSubmit, formState } = form;
   const { errors } = formState;
   const navigate = useNavigate();
-  const { user } = useAuth()
+  const { user, setUser } = useAuth()
 
   const onSubmit = (data) => {
     console.log("Form Submitted", data);
@@ -23,6 +23,7 @@ export const Login = () => {
     try {
       const response = await axiosInstance.post("/login", data);
       localStorage.setItem("token", response.data.token);
+      setUser(response.data.user);
       navigate("/dashboard/posts");
       toast.success("Login Successful");
       console.log("Login Successful", response.data);

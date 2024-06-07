@@ -26,8 +26,8 @@ const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         await axiosInstance.post("/logout");
-        setUser(null);
         localStorage.removeItem("token");
+        setUser(null);
         toast.success("Logged out successfully");
     };
 
@@ -36,7 +36,7 @@ const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, logout }}>
+        <AuthContext.Provider value={{ user, logout, setUser }}>
             {loading && <FullLoader />}
             {children}
         </AuthContext.Provider>
