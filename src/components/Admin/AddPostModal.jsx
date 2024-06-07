@@ -134,7 +134,9 @@ const AddPostModal = ({ setIsModalOpen, setSelectedPost, selectedPost }) => {
                         <p className="text-red-400 text-sm">{errors.status?.message}</p> */}
 
 
-                    <button className="bg-blue-500 text-white p-2 rounded-md mt-5">Add Post</button>
+                    <button className="bg-blue-500 text-white p-2 rounded-md mt-5">
+                        {selectedPost ? "Update Post" : "Add Post"}
+                    </button>
                 </form>
 
             </div>
