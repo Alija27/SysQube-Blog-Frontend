@@ -2,11 +2,17 @@ import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { useMutation } from "react-query";
 import axiosInstance from "../config/axiosInstance";
+import { useAuth } from "../Providers/AuthProvider";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export const Login = () => {
   const form = useForm();
-  const { register, control, handleSubmit, formState } = form;
+  const { register, handleSubmit, formState } = form;
   const { errors } = formState;
+  const navigate = useNavigate();
+  const { user } = useAuth()
 
   const onSubmit = (data) => {
     console.log("Form Submitted", data);
@@ -17,12 +23,12 @@ export const Login = () => {
     try {
       const response = await axiosInstance.post("/login", data);
       localStorage.setItem("token", response.data.token);
-
+      navigate("/dashboard/posts");
+      toast.success("Login Successful");
       console.log("Login Successful", response.data);
     } catch (error) {
-
+      toast.error(error?.response?.data?.message || "Login Failed")
       console.log("Login Failed", error);
-
     }
   }
 
@@ -31,6 +37,12 @@ export const Login = () => {
   }
 
   const { mutate } = useLogin();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard/posts")
+    }
+  }, [user])
 
   return (
     <>
@@ -59,7 +71,6 @@ export const Login = () => {
             <p className="text-red-400 text-sm">{errors.password?.message}</p>
             <button className="bg-blue-500 text-white p-2 rounded-md mt-5">Sign in</button>
           </form>
-          <DevTool control={control} />
         </div>
       </div>
     </>
