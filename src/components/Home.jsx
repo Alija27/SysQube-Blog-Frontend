@@ -1,6 +1,7 @@
 import { useQuery } from "react-query";
 import axios from "axios";
 import moment from "moment";
+import { Link } from "react-router-dom";
 export const Home = () => {
   const { data, isLoading } = useQuery("posts", async () => {
     const response = await axios.get("http://localhost:8000/api/posts");
@@ -66,7 +67,7 @@ export const Home = () => {
                 </div>
                 <p className="text-gray-500">
                   {truncateString(post.description)}
-                  <p className="text-blue-500">Read More</p>
+                  <Link to={`/post/${post.id}`} className="text-blue-500">Read More</Link>
                 </p>
                 <div className="flex justify-end space-x-4">
                   <p className="text-gray-500 text-sm">
